@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rule Engine</title>
+</head>
+<body>
+    <h1>Rule Engine</h1>
+    <div>
+        <h2>Create Rule</h2>
+        <textarea id="ruleInput" placeholder="Enter rule here"></textarea>
+        <button onclick="createRule()">Create Rule</button>
+        <p id="createRuleResponse"></p>
+    </div>
+    <div>
+        <h2>Combine Rules</h2>
+        <input type="text" id="ruleIdsInput" placeholder="Enter rule IDs (comma separated)">
+        <button onclick="combineRules()">Combine Rules</button>
+        <p id="combineRulesResponse"></p>
+    </div>
+    <div>
+        <h2>Evaluate Rule</h2>
+        <textarea id="astInput" placeholder="Enter AST JSON here"></textarea>
+        <textarea id="dataInput" placeholder="Enter data JSON here"></textarea>
+        <button onclick="evaluateRule()">Evaluate Rule</button>
+        <p id="evaluateRuleResponse"></p>
+    </div>
+    <script>
+        function createRule() {
+            const ruleString = document.getElementById('ruleInput').value;
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({rule_string: ruleString})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('createRuleResponse').innerText = JSON.stringify(data);
+            });
+        }
+
+        function combineRules() {
+            const ruleIds = document.getElementById('ruleIdsInput').value.split(',').map(id => parseInt(id.trim()));
+            fetch('/combine_rules', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({rule_ids: ruleIds})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('combineRulesResponse').innerText = JSON.stringify(data);
+            });
+        }
+
+        function evaluateRule() {
+            const astJson = document.getElementById('astInput').value;
+            const dataJson = document.getElementById('dataInput').value;
+            fetch('/evaluate_rule', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ast_json: astJson, data: JSON.parse(dataJson)})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('evaluateRuleResponse').innerText = JSON.stringify(data);
+            });
+        }
+    </script>
+</body>
+</html>

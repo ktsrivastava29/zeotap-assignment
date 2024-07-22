@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Monitoring System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Weather Monitoring System</h1>
+    <button onclick="updateWeather()">Update Weather</button>
+    <button onclick="showDailySummary()">Show Daily Summary</button>
+    <button onclick="setAlertThreshold()">Set Alert Threshold</button>
+
+    <div id="output"></div>
+
+    <script>
+        function updateWeather() {
+            fetch('/update_weather', {
+                method: 'POST'
+            }).then(response => response.text())
+              .then(data => {
+                  document.getElementById('output').innerHTML = data;
+              });
+        }
+
+        function showDailySummary() {
+            const city = prompt("Enter city:");
+            const date = prompt("Enter date (YYYY-MM-DD):");
+            fetch(`/daily_summary?city=${city}&date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').innerHTML = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function setAlertThreshold() {
+            const city = prompt("Enter city:");
+            const threshold_temp = prompt("Enter threshold temperature:");
+            fetch('/set_alert_threshold', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ city: city, threshold_temp: threshold_temp })
+            }).then(response => response.text())
+              .then(data => {
+                  document.getElementById('output').innerHTML = data;
+              });
+        }
+    </script>
+</body>
+</html>
